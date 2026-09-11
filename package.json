@@ -1,0 +1,8 @@
+{
+  "name": "omp-architect",
+  "version": "0.1.0",
+  "description": "架构师 Agent 的 omp（oh-my-pi）宿主外壳：扩展工具面 architect_digest/design/review/lint——校验与评分逻辑在 architect-core（宿主中立核心）",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts"
+}

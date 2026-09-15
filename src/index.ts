@@ -221,11 +221,15 @@ function lintTool(z: ZodLike): OmpCustomTool {
       const a = (params ?? {}) as Record<string, unknown>
       const kbRoot = str(a.kb_root).trim() !== '' ? str(a.kb_root).trim() : 'architect-knowledge'
       const r = lintKnowledgeAt(kbRoot)
+      const isoNote = r.isolated
+        ? `⚠️ 隔离上下文（快照/活仓挂载）：KB 外 ref 降 warning，备案计数 ${r.warnings.length} 条；如需严格请加 --full`
+        : ''
       const head = r.pass
-        ? `✅ 知识库校验通过：${r.stats.entries} 条（已确认 ${r.stats.confirmed} / 待审核 ${r.stats.pending}）`
+        ? `✅ 知识库校验通过：${r.stats.entries} 条（已确认 ${r.stats.confirmed} / 待审核 ${r.stats.pending}）${r.isolated ? '（隔离上下文）' : ''}`
         : `⛔ 知识库校验失败：错误 ${r.errors.length} 处`
       const text = [
         head,
+        isoNote,
         `root=${r.root}`,
         ...r.errors.map(i => `⛔ [${i.rule}] ${i.path}：${i.message}`),
         r.errors.length > 0 ? '修复后重跑；error 非空期间不得提交。' : '',
@@ -234,6 +238,8 @@ function lintTool(z: ZodLike): OmpCustomTool {
         content: [{ type: 'text', text }],
         details: {
           pass: r.pass,
+          isolated: r.isolated,
+          warningCount: r.warnings.length,
           root: r.root,
           entries: r.stats.entries,
           confirmed: r.stats.confirmed,
